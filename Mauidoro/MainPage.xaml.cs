@@ -1,11 +1,14 @@
-﻿namespace Mauidoro;
+﻿using Mauidoro.ViewModel;
+
+namespace Mauidoro;
 
 public partial class MainPage : ContentPage
 {
 
-	public MainPage()
+	public MainPage(MainViewModel vm)
 	{
 		InitializeComponent();
+		BindingContext = vm;
 	}
 	
 }
