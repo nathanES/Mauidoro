@@ -31,4 +31,15 @@ public partial class MainViewModel : ObservableObject
         if (Items.Contains(s))
             Items.Remove(s);
     }
+    
+    [RelayCommand]
+    async Task Tap(string s)
+    {
+        await Shell.Current.GoToAsync($"{nameof(DetailPage)}?Text={s}");
+        //On peut passer des objets complex dans le deuxième paramètre de la méthode dans un dictionnaire
+        // , new Dictionary<string, object>()
+        // {
+        //     nameof(DetailPage), new object()
+        // };
+    }
 }
