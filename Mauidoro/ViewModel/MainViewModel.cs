@@ -6,9 +6,11 @@ namespace Mauidoro.ViewModel;
 
 public partial class MainViewModel : ObservableObject
 {
-    public MainViewModel()
+    private IConnectivity connectivity;
+    public MainViewModel(IConnectivity connectivity)
     {
         items = new ObservableCollection<string>();
+        this.connectivity = connectivity;
     }
     [ObservableProperty]
     private ObservableCollection<string> items;
@@ -17,10 +19,15 @@ public partial class MainViewModel : ObservableObject
     private string text;
     
     [RelayCommand]
-    void Add()
+    async Task Add()
     {
         if (string.IsNullOrEmpty(Text))
             return;
+        if (connectivity.NetworkAccess != NetworkAccess.Internet)
+        {
+            await Shell.Current.DisplayAlert("Uh Oh", "No Internet", "OK");
+            return;
+        }
         Items.Add(Text);
         Text = string.Empty;
     }
