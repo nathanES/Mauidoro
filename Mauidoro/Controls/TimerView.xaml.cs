@@ -36,11 +36,28 @@ public partial class TimerView : ContentView, INotifyPropertyChanged
         }
     }
 
+    private TimeSpan timerSession;
 
-    public System.Timers.Timer timer;
+    public TimeSpan TimerSession
+    {
+        get => timerSession;
+        set
+        {
+            if (timerSession == value)
+                return;
+            timerSession = value;
+            OnPropertyChanged(nameof(TimerSession));
+        }
+    }
+
+
+    private System.Timers.Timer timer;
     public ICommand StartTimerCommand => new Command(StartTimer);
     private  void StartTimer()
     {
+        //TODO a enlever
+        TimerSession = new TimeSpan(0, 25,0);
+        
         SetTimer();
     }
 
@@ -54,21 +71,31 @@ public partial class TimerView : ContentView, INotifyPropertyChanged
     
     private void OnTimedEvent(Object source, ElapsedEventArgs e)
     {
-        I++;
-        Console.WriteLine("The Elapsed event was raised at {0:HH:mm:ss.fff}",
-            e.SignalTime);
+        TimerSession =TimerSession.Subtract(new TimeSpan(0, 0, 1));
+        // I++;
+        
+        // Console.WriteLine("The Elapsed event was raised at {0:HH:mm:ss.fff}",
+        //     e.SignalTime);
     }
     
 
     public ICommand StopTimerCommand => new Command(StopTimer);
 
-    private  void StopTimer()
+    private void StopTimer()
     {
         timer.Stop();
         timer.Dispose();
-        I = 0;
+        // I = 0;
     }
 
+    public ICommand BreakTimerCommand => new Command(BreakTimer);
+    private void BreakTimer()
+    {
+        timer.Stop();
+    }
+    
+    
+    
     
     
     

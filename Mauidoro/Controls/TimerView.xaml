@@ -9,11 +9,25 @@
         <Grid RowDefinitions="20,20,40">
             <Label Grid.Row="0"
                 Text="{Binding TimerTitle, FallbackValue='Timer Title'}"/>
-            <Label Grid.Row="1"
-                Text="{Binding I, StringFormat='Compteur : {0}'}"/>
+            <!-- <Label Grid.Row="1" -->
+            <!--     Text="{Binding I, StringFormat='Compteur : {0}'}"/> -->
+            <Label Grid.Row="1">
+                   <!-- Text="{Binding TimerSession, StringFormat='{}{0:mm\\ : \\ ss}'}"> -->
+              <Label.Text>
+                  <MultiBinding StringFormat="{}{0:00}:{1:00}">
+                      <Binding Path="TimerSession.Minutes"/>
+                      <Binding Path="TimerSession.Seconds"/>
+                  </MultiBinding>
+              </Label.Text>
+                
+                <!-- Text="{Binding TimerSession}"/> -->
+
+            </Label>
             <HorizontalStackLayout Grid.Row="2">
                 <Button Text="Start" 
                         Command="{Binding StartTimerCommand}"/>
+                <Button Text="Break" 
+                        Command="{Binding BreakTimerCommand}"/>
                 <Button Text="Stop" 
                         Command="{Binding StopTimerCommand}"/>
 
