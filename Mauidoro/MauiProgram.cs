@@ -1,4 +1,5 @@
-﻿using Mauidoro.ViewModel;
+﻿using Mauidoro.Controls;
+using Mauidoro.ViewModel;
 using Microsoft.Extensions.Logging;
 
 namespace Mauidoro;
@@ -20,13 +21,14 @@ public static class MauiProgram
 		builder.Services.AddSingleton<MainPage>();
 		builder.Services.AddSingleton<MainViewModel>(); // est créé qu'une fois 
 		
-		builder.Services.AddTransient<DetailPage>(); // est créé à chaque fois que l'on va sur la page, puis est détruit
-		builder.Services.AddTransient<DetailViewModel>();
+		builder.Services.AddTransient<DetailTaskPage>(); // est créé à chaque fois que l'on va sur la page, puis est détruit
+		builder.Services.AddTransient<DetailTaskViewModel>();
+		
+		builder.Services.AddSingleton<TimerView>();
 
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif
-
 		return builder.Build();
 	}
 }

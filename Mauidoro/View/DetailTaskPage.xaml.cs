@@ -7,9 +7,9 @@ using Mauidoro.ViewModel;
 
 namespace Mauidoro;
 
-public partial class DetailPage : ContentPage
+public partial class DetailTaskPage : ContentPage
 {
-    public DetailPage(DetailViewModel vm)
+    public DetailTaskPage(DetailTaskViewModel vm)
     {
         InitializeComponent();
         BindingContext = vm;

@@ -3,17 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Mauidoro.MainPage"
              xmlns:viewmodel="clr-namespace:Mauidoro.ViewModel"
+             xmlns:controls="clr-namespace:Mauidoro.Controls"
              x:DataType="viewmodel:MainViewModel">
 
-   <Grid RowDefinitions="100, Auto, *"
+   <Grid RowDefinitions="Auto, Auto, *"
          ColumnDefinitions=".75*, .25*"
          Padding="10"
          RowSpacing="10"
          ColumnSpacing="10">
-       
-       <!-- <Image Grid.ColumnSpan="2" -->
-       <!--        Source="leo1.jpg" -->
-       <!--        BackgroundColor="Transparent"/> -->
+       <controls:TimerView Grid.Row="0"
+           TimerTitle="Test1"/>
        
        <Entry Placeholder="Enter task"
               Text="{Binding Text}"

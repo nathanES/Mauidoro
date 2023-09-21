@@ -42,7 +42,7 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     async Task Tap(string s)
     {
-        await Shell.Current.GoToAsync($"{nameof(DetailPage)}?Text={s}");
+        await Shell.Current.GoToAsync($"{nameof(DetailTaskPage)}?Text={s}");
         //On peut passer des objets complex dans le deuxième paramètre de la méthode dans un dictionnaire
         // , new Dictionary<string, object>()
         // {
