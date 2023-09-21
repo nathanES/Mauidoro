@@ -5,31 +5,32 @@
              xmlns:viewmodel="clr-namespace:Mauidoro.ViewModel"
              x:Class="Mauidoro.Controls.TimerView"
              x:Name="this">
-    <Frame BindingContext="{x:Reference this}">
-        <Grid RowDefinitions="20,20,40">
-            <Label Grid.Row="0"
-                Text="{Binding TimerTitle, FallbackValue='Timer Title'}"/>
-            <!-- <Label Grid.Row="1" -->
-            <!--     Text="{Binding I, StringFormat='Compteur : {0}'}"/> -->
-            <Label Grid.Row="1">
-                   <!-- Text="{Binding TimerSession, StringFormat='{}{0:mm\\ : \\ ss}'}"> -->
+    <Frame BindingContext="{x:Reference this}" BorderColor="Aquamarine" CornerRadius="40" >
+        <Grid RowDefinitions="*,*" ColumnDefinitions="1*">
+            <Label Grid.Row="0" 
+                   HorizontalTextAlignment="Center"
+                   VerticalTextAlignment="Center"
+                   FontSize="30">
               <Label.Text>
                   <MultiBinding StringFormat="{}{0:00}:{1:00}">
-                      <Binding Path="TimerSession.Minutes"/>
-                      <Binding Path="TimerSession.Seconds"/>
+                      <Binding Path="TimerSessionDoro.Minutes"/>
+                      <Binding Path="TimerSessionDoro.Seconds"/>
                   </MultiBinding>
               </Label.Text>
-                
-                <!-- Text="{Binding TimerSession}"/> -->
-
             </Label>
-            <HorizontalStackLayout Grid.Row="2">
+            <HorizontalStackLayout Grid.Row="1" HorizontalOptions="CenterAndExpand">
                 <Button Text="Start" 
+                        IsEnabled="{Binding CanStartTimer}"
+                        IsVisible="{Binding CanStartTimer}"
                         Command="{Binding StartTimerCommand}"/>
                 <Button Text="Break" 
+                        IsEnabled="{Binding CanBreakTimer}"
+                        IsVisible="{Binding CanBreakTimer}"
                         Command="{Binding BreakTimerCommand}"/>
-                <Button Text="Stop" 
-                        Command="{Binding StopTimerCommand}"/>
+                <!-- <Button Text="Stop"  -->
+                <!--         IsEnabled="{Binding CanStopTimer}"                         -->
+                <!--         IsVisible="{Binding CanStopTimer}" -->
+                <!--         Command="{Binding StopTimerCommand}"/> -->
 
             </HorizontalStackLayout>
             

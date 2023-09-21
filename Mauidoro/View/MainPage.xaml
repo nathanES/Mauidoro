@@ -11,8 +11,9 @@
          Padding="10"
          RowSpacing="10"
          ColumnSpacing="10">
-       <controls:TimerView Grid.Row="0"
-           TimerTitle="Test1"/>
+       <controls:TimerView Grid.Row="0" Grid.ColumnSpan="2"
+            HorizontalOptions="CenterAndExpand"
+            TimerTitle="Test1"/>
        
        <Entry Placeholder="Enter task"
               Text="{Binding Text}"
