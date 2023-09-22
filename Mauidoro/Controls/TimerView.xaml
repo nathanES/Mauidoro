@@ -13,8 +13,8 @@
                    FontSize="30">
               <Label.Text>
                   <MultiBinding StringFormat="{}{0:00}:{1:00}">
-                      <Binding Path="TimerSessionDoro.Minutes"/>
-                      <Binding Path="TimerSessionDoro.Seconds"/>
+                      <Binding Path="TimerSessionPomodoro.Minutes"/>
+                      <Binding Path="TimerSessionPomodoro.Seconds"/>
                   </MultiBinding>
               </Label.Text>
             </Label>

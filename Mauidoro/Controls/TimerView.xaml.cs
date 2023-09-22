@@ -18,160 +18,197 @@ public partial class TimerView : ContentView, INotifyPropertyChanged
         set => SetValue(TimerView.TimerTitleProperty, value);
     }
     #endregion
-    private System.Timers.Timer timer;
-    
-    
-    //Pomodoro :
-    //1 Pomodoro : 25 minutes de travail + 5 minutes de pauses
-    //Après le 4ième pomodoro la pause est de 15 minutes
-    private int iPause = 0; //Si iPause est %4 == 0 alors on est dans une longue Pause
 
-    private bool isFocusMode = true;
-    public bool IsFocusMode
-    {
-        get => isFocusMode;
-        set
-        {
-            if (isFocusMode == value)
-                return;
-            
-            isFocusMode = value;
-            if (!isFocusMode)
-                iPause++;
-            OnPropertyChanged(nameof(IsFocusMode));
-        }
-    }
-    // private bool isPauseMode { get => !isFocusMode; }
+    private int _iPauseSessionDone { get; set; } = 0; //Si iPause est %4 == 0 alors on est dans une longue Pause
+    private int _iTravailSessionDone { get; set; } = 0; //Si iPause est %4 == 0 alors on est dans une longue Pause
+
+    private int _iSessionDone { get => _iPauseSessionDone + _iTravailSessionDone;}
+    private System.Timers.Timer _timer;
     
-    private TimeSpan timerSessionDoro;
-    public TimeSpan TimerSessionDoro
+    private TimeSpan _timerSessionPomodoro;
+    public TimeSpan TimerSessionPomodoro
     {
-        get => timerSessionDoro;
+        get => _timerSessionPomodoro;
         private set
         {
-            if (timerSessionDoro == value)
+            if (_timerSessionPomodoro == value)
                 return;
-            
-            if (value == new TimeSpan(0, 0, 0))
-            {
-                IsFocusMode = !IsFocusMode;
-                timerSessionDoro = GetTimerTimeSpanSession();
-            }
-            else
-                timerSessionDoro = value;
-            OnPropertyChanged(nameof(TimerSessionDoro));
+            _timerSessionPomodoro = value;
+
+            if (_timerSessionPomodoro == new TimeSpan(0, 0, 0))
+                OnTimerFinished();
+            OnPropertyChanged(nameof(TimerSessionPomodoro));
         }
     }
 
-    private TimeSpan GetTimerTimeSpanSession()
+    private bool _isFocusMode;
+    public bool IsFocusMode
     {
-        if (IsFocusMode)
-            return new TimeSpan(0, 0, 5);//Pour les tests //remplacer par 25minutes
-        else if (iPause % 4 == 0 && iPause !=0)
-            return new TimeSpan(0, 0, 3);//remplacer par 15minutes
-        else
-            return new TimeSpan(0, 0, 2); //remplacer par 5minutes
-    }
-
-    public ICommand StartTimerCommand => new Command(StartTimer, ()=> CanStartTimer);
-    private bool canStartTimer = true;
-    public bool CanStartTimer
-    {
-        get => canStartTimer;
+        get => _isFocusMode;
         set
         {
-            if(canStartTimer == value)
+            if(_isFocusMode == value)
                 return;
-            canStartTimer = value;
+            _isFocusMode = value;
+            OnPropertyChanged(nameof(IsFocusMode));
+            OnPropertyChanged(nameof(IsPauseMode));
+        }
+        
+    }
+    public bool IsPauseMode => !IsFocusMode;
+
+    private bool _canStartTimer;
+    public bool CanStartTimer
+    {
+        get => _canStartTimer;
+        set
+        {
+            if (_canStartTimer == value)
+                return;
+            _canStartTimer = value;
             OnPropertyChanged(nameof(CanStartTimer));
         }
     }
-    private  void StartTimer()
-    {
-        SetTimer();
-        CanStartTimer = false;
-        CanStopTimer = true;
-        CanBreakTimer = true;
-    }
+    public ICommand StartTimerCommand => new Command(SetAndStartTimer, ()=> CanStartTimer);
+    public void SetAndStartTimer() => this.OnTimerStarted();
 
-    private bool canStopTimer = false;
-    public bool CanStopTimer
-    {
-        get => canStopTimer;
-        set
-        {
-            if(canStopTimer == value)
-                return;
-            canStopTimer = value;
-            OnPropertyChanged(nameof(CanStopTimer));
-        }
-    }
-
-    public ICommand StopTimerCommand => new Command(StopTimer, () => CanStopTimer);
-    
-    private void StopTimer()
-    {
-        timer.Stop();
-        timer.Dispose();
-        
-        timerSessionDoro = new TimeSpan(0, 0, 0);
-        CanStopTimer = false;
-        CanStartTimer = true;
-        CanBreakTimer = false;
-        
-    }
-
-    private bool canBreakTimer = false;
+    private bool _canBreakTimer;
     public bool CanBreakTimer
     {
-        get => canBreakTimer;
+        get => _canBreakTimer;
         set
         {
-            if(canBreakTimer == value)
+            if (_canBreakTimer == value)
                 return;
-            canBreakTimer = value;
+            _canBreakTimer = value;
             OnPropertyChanged(nameof(CanBreakTimer));
         }
     }
     public ICommand BreakTimerCommand => new Command(BreakTimer, () => CanBreakTimer);
-    private void BreakTimer()
+    public void BreakTimer() => this.OnTimerBreaked();
+
+    private bool _canStopTimer;
+
+    public bool CanStopTimer
     {
-        timer.Stop();
+        get => _canStopTimer;
+        set
+        {
+            if (_canStopTimer == value)
+                return;
+            _canStopTimer = value;
+            OnPropertyChanged(nameof(CanStopTimer));
+        }
+    }
+    public ICommand StopTimerCommand => new Command(StopTimer, () => CanStopTimer);
+    public void StopTimer() =>this.OnTimerStopped();
+
+
+    #region Events
+    public event EventHandler? TimerStartedEvent;
+    protected virtual void OnTimerStarted()
+        => TimerStartedEvent?.Invoke(this, EventArgs.Empty);
+
+    public event EventHandler? TimerBreakedEvent;
+
+    protected virtual void OnTimerBreaked()
+        => TimerBreakedEvent?.Invoke(this, EventArgs.Empty);
+
+    public event EventHandler? TimerStoppedEvent;
+
+    protected virtual void OnTimerStopped() 
+        => TimerStoppedEvent?.Invoke(this, EventArgs.Empty);
+
+    public event EventHandler? TimerFinishedEvent;
+    protected virtual void OnTimerFinished()//EventArgs e)
+        => TimerFinishedEvent?.Invoke(this, EventArgs.Empty);
+
+    #endregion
+    
+    private void TimerStarted(object? sender, EventArgs e)
+    {
+        Console.WriteLine("TimerStarted");   
+        _timer = new System.Timers.Timer(1000);
+        _timer.Elapsed += OnTimedEvent;
+        _timer.AutoReset = true;
+        _timer.Enabled = true;
         
-        CanBreakTimer = false;
-        CanStartTimer = true;
+        CanStartTimer = false;
+        CanBreakTimer = true;
         CanStopTimer = true;
     }
+    private void TimerBreaked(object? sender, EventArgs e)
+    {
+        _timer.Stop();
+        CanStartTimer = true;
+        CanBreakTimer = false;
+        CanStopTimer = true;
+    }
+    private void TimerStopped(object? sender, EventArgs e)
+    {        
+        _timer.Stop();
+        _timer.Dispose();
+        SetUpNextSession();
+        CanStartTimer = true;
+        CanBreakTimer = false;
+        CanStopTimer = false;
+    }
     
-    
+    private void TimerFinished(object? sender, EventArgs e)
+    {
+        Console.WriteLine("TimerFinished");
+        if (IsPauseMode)
+        {
+            _timer.Stop();
+            _timer.Dispose();
+            CanStartTimer = true;
+            CanBreakTimer = false;
+            CanStopTimer = false;
+        };
+        SetUpNextSession();
+    }
 
-    
-  
-    private void SetTimer()
+    private void SetUpNextSession()
     {
-        timer = new System.Timers.Timer(1000);
-        timer.Elapsed += OnTimedEvent;
-        timer.AutoReset = true;
-        timer.Enabled = true;
-    }
-    private void OnTimedEvent(Object source, ElapsedEventArgs e)
-    {
-        TimerSessionDoro = TimerSessionDoro.Subtract(new TimeSpan(0, 0, 1));
-        // Console.WriteLine("The Elapsed event was raised at {0:HH:mm:ss.fff}",
-        //     e.SignalTime);
+        if (IsPauseMode)
+            _iPauseSessionDone++;
+        else
+            _iTravailSessionDone++;
+        IsFocusMode = !IsFocusMode;
+        TimerSessionPomodoro = GetTimerTimeSpanSession();
     }
     
+    
+    private void OnTimedEvent(Object source, ElapsedEventArgs e) 
+        =>TimerSessionPomodoro = TimerSessionPomodoro.Subtract(new TimeSpan(0, 0, 1));
+    private TimeSpan GetTimerTimeSpanSession()
+    {
+        if (IsFocusMode)
+            return new TimeSpan(0, 0, 5);//Pour les tests //remplacer par 25minutes
+        else if (_iTravailSessionDone % 4 == 0 && _iPauseSessionDone !=0)
+            return new TimeSpan(0, 0, 3);//remplacer par 15minutes
+        else
+            return new TimeSpan(0, 0, 2); //remplacer par 5minutes
+    }
     
     
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    
+        PropertyChanged?.Invoke(null, new PropertyChangedEventArgs(name));
     
     public TimerView()
-    {
+    {        
         InitializeComponent();
-        TimerSessionDoro = GetTimerTimeSpanSession();
+        IsFocusMode = true;
+        TimerSessionPomodoro = GetTimerTimeSpanSession();
+        TimerStartedEvent += TimerStarted;
+        TimerBreakedEvent += TimerBreaked;
+        TimerStoppedEvent += TimerStopped;
+        TimerFinishedEvent += TimerFinished;
+        CanStartTimer = true;
+        CanStopTimer = false;
+        CanBreakTimer = false;
+
         // StartTimerCommand = new Command(async () => await StartTimerAsync()); //Mettre une methode asynchrone
     }
 
