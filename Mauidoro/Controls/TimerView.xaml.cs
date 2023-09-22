@@ -5,8 +5,6 @@ using System.Windows.Input;
 
 namespace Mauidoro.Controls;
 
- 
-
 public partial class TimerView : ContentView, INotifyPropertyChanged
 {
     #region Title
@@ -50,8 +48,8 @@ public partial class TimerView : ContentView, INotifyPropertyChanged
             if(_isFocusMode == value)
                 return;
             _isFocusMode = value;
-            OnPropertyChanged(nameof(IsFocusMode));
             OnPropertyChanged(nameof(IsPauseMode));
+            OnPropertyChanged(nameof(IsFocusMode));
         }
         
     }
@@ -67,113 +65,56 @@ public partial class TimerView : ContentView, INotifyPropertyChanged
                 return;
             _canStartTimer = value;
             OnPropertyChanged(nameof(CanStartTimer));
+            OnPropertyChanged(nameof(CanBreakTimer));
         }
     }
     public ICommand StartTimerCommand => new Command(SetAndStartTimer, ()=> CanStartTimer);
     public void SetAndStartTimer() => this.OnTimerStarted();
-
-    private bool _canBreakTimer;
+    
     public bool CanBreakTimer
     {
-        get => _canBreakTimer;
-        set
-        {
-            if (_canBreakTimer == value)
-                return;
-            _canBreakTimer = value;
-            OnPropertyChanged(nameof(CanBreakTimer));
-        }
+        get => !CanStartTimer;
     }
     public ICommand BreakTimerCommand => new Command(BreakTimer, () => CanBreakTimer);
     public void BreakTimer() => this.OnTimerBreaked();
 
-    private bool _canStopTimer;
 
-    public bool CanStopTimer
-    {
-        get => _canStopTimer;
-        set
-        {
-            if (_canStopTimer == value)
-                return;
-            _canStopTimer = value;
-            OnPropertyChanged(nameof(CanStopTimer));
-        }
-    }
-    public ICommand StopTimerCommand => new Command(StopTimer, () => CanStopTimer);
-    public void StopTimer() =>this.OnTimerStopped();
-
-
-    #region Events
-    public event EventHandler? TimerStartedEvent;
-    protected virtual void OnTimerStarted()
-        => TimerStartedEvent?.Invoke(this, EventArgs.Empty);
-
-    public event EventHandler? TimerBreakedEvent;
-
-    protected virtual void OnTimerBreaked()
-        => TimerBreakedEvent?.Invoke(this, EventArgs.Empty);
-
-    public event EventHandler? TimerStoppedEvent;
-
-    protected virtual void OnTimerStopped() 
-        => TimerStoppedEvent?.Invoke(this, EventArgs.Empty);
-
-    public event EventHandler? TimerFinishedEvent;
-    protected virtual void OnTimerFinished()//EventArgs e)
-        => TimerFinishedEvent?.Invoke(this, EventArgs.Empty);
-
-    #endregion
-    
     private void TimerStarted(object? sender, EventArgs e)
     {
-        Console.WriteLine("TimerStarted");   
         _timer = new System.Timers.Timer(1000);
         _timer.Elapsed += OnTimedEvent;
         _timer.AutoReset = true;
         _timer.Enabled = true;
         
         CanStartTimer = false;
-        CanBreakTimer = true;
-        CanStopTimer = true;
     }
     private void TimerBreaked(object? sender, EventArgs e)
     {
         _timer.Stop();
         CanStartTimer = true;
-        CanBreakTimer = false;
-        CanStopTimer = true;
-    }
-    private void TimerStopped(object? sender, EventArgs e)
-    {        
-        _timer.Stop();
-        _timer.Dispose();
-        SetUpNextSession();
-        CanStartTimer = true;
-        CanBreakTimer = false;
-        CanStopTimer = false;
     }
     
     private void TimerFinished(object? sender, EventArgs e)
     {
-        Console.WriteLine("TimerFinished");
         if (IsPauseMode)
-        {
-            _timer.Stop();
-            _timer.Dispose();
-            CanStartTimer = true;
-            CanBreakTimer = false;
-            CanStopTimer = false;
-        };
-        SetUpNextSession();
+            OnTimerPauseFinished();
+        else
+            OnTimerFocusFinished();
     }
 
-    private void SetUpNextSession()
+    private void TimerFocusFinished(object? sender, EventArgs e)
     {
-        if (IsPauseMode)
-            _iPauseSessionDone++;
-        else
-            _iTravailSessionDone++;
+        _iTravailSessionDone++;
+        IsFocusMode = !IsFocusMode;
+        TimerSessionPomodoro = GetTimerTimeSpanSession();
+    }
+    private void TimerPauseFinished(object? sender, EventArgs e)
+    {
+        _iPauseSessionDone++;
+        _timer.Stop();
+        _timer.Dispose();
+        CanStartTimer = true;
+        
         IsFocusMode = !IsFocusMode;
         TimerSessionPomodoro = GetTimerTimeSpanSession();
     }
@@ -191,11 +132,6 @@ public partial class TimerView : ContentView, INotifyPropertyChanged
             return new TimeSpan(0, 0, 2); //remplacer par 5minutes
     }
     
-    
-    public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = null) =>
-        PropertyChanged?.Invoke(null, new PropertyChangedEventArgs(name));
-    
     public TimerView()
     {        
         InitializeComponent();
@@ -203,11 +139,10 @@ public partial class TimerView : ContentView, INotifyPropertyChanged
         TimerSessionPomodoro = GetTimerTimeSpanSession();
         TimerStartedEvent += TimerStarted;
         TimerBreakedEvent += TimerBreaked;
-        TimerStoppedEvent += TimerStopped;
         TimerFinishedEvent += TimerFinished;
+        TimerFocusFinishedEvent += TimerFocusFinished;
+        TimerPauseFinishedEvent += TimerPauseFinished;
         CanStartTimer = true;
-        CanStopTimer = false;
-        CanBreakTimer = false;
 
         // StartTimerCommand = new Command(async () => await StartTimerAsync()); //Mettre une methode asynchrone
     }
@@ -216,4 +151,30 @@ public partial class TimerView : ContentView, INotifyPropertyChanged
     // {
     //     I++;
     // }
+    #region Events
+    public static event EventHandler? TimerStartedEvent;
+    protected virtual void OnTimerStarted()
+        => TimerStartedEvent?.Invoke(this, EventArgs.Empty);
+
+    public static event EventHandler? TimerBreakedEvent;
+
+    protected virtual void OnTimerBreaked()
+        => TimerBreakedEvent?.Invoke(this, EventArgs.Empty);
+
+    public static event EventHandler? TimerFinishedEvent;
+    protected virtual void OnTimerFinished()//EventArgs e)
+        => TimerFinishedEvent?.Invoke(this, EventArgs.Empty);
+
+    public static event EventHandler? TimerFocusFinishedEvent;
+    protected virtual void OnTimerFocusFinished()//EventArgs e)
+        => TimerFocusFinishedEvent?.Invoke(this, EventArgs.Empty);
+    
+    public static event EventHandler? TimerPauseFinishedEvent;
+    protected virtual void OnTimerPauseFinished()//EventArgs e)
+        => TimerPauseFinishedEvent?.Invoke(this, EventArgs.Empty);
+    #endregion
+
+    public event PropertyChangedEventHandler PropertyChanged;
+    public void OnPropertyChanged([CallerMemberName] string name = null) =>
+        PropertyChanged?.Invoke(null, new PropertyChangedEventArgs(name));
 }

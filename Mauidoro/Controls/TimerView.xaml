@@ -21,17 +21,12 @@
             <HorizontalStackLayout Grid.Row="1" HorizontalOptions="CenterAndExpand">
                 <Button Text="Start" 
                         IsEnabled="{Binding CanStartTimer}"
-                        IsVisible="{Binding CanStartTimer}"
-                        Command="{Binding StartTimerCommand}"/>
+                        Command="{Binding StartTimerCommand}"
+                        WidthRequest="75"/>
                 <Button Text="Break" 
                         IsEnabled="{Binding CanBreakTimer}"
-                        IsVisible="{Binding CanBreakTimer}"
-                        Command="{Binding BreakTimerCommand}"/>
-                <!-- <Button Text="Stop"  -->
-                <!--         IsEnabled="{Binding CanStopTimer}"                         -->
-                <!--         IsVisible="{Binding CanStopTimer}" -->
-                <!--         Command="{Binding StopTimerCommand}"/> -->
-
+                        Command="{Binding BreakTimerCommand}"
+                        WidthRequest="75"/>
             </HorizontalStackLayout>
             
         </Grid>

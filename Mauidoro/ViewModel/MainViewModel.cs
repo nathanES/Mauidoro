@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Mauidoro.Controls;
 
 namespace Mauidoro.ViewModel;
 
@@ -9,8 +10,15 @@ public partial class MainViewModel : ObservableObject
     private IConnectivity connectivity;
     public MainViewModel(IConnectivity connectivity)
     {
+        TimerView.TimerFocusFinishedEvent += TimerFinished;
         items = new ObservableCollection<string>();
         this.connectivity = connectivity;
+    }
+
+    private void TimerFinished(object sender, EventArgs e)
+    {
+        //Todo doit enlever un pomodoro à la tache du dessus et la supprimer si elle ne possède plus de pomodoro
+        Console.WriteLine("J'ai bien recu l'evenement");
     }
     [ObservableProperty]
     private ObservableCollection<string> items;
