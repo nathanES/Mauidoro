@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<!-- <?xml version="1.0" encoding="utf-8" ?> -->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Mauidoro.MainPage"
@@ -6,21 +6,18 @@
              xmlns:controls="clr-namespace:Mauidoro.Controls"
              xmlns:model="clr-namespace:Mauidoro.Model"
              x:DataType="viewmodel:MainViewModel">
-
-   <Grid RowDefinitions="Auto, Auto, *"
+       <Grid RowDefinitions="Auto, Auto, *"
          ColumnDefinitions=".75*, .25*"
          Padding="10"
          RowSpacing="10"
          ColumnSpacing="10">
-       <controls:TimerView Grid.Row="0" Grid.ColumnSpan="2"
-            HorizontalOptions="CenterAndExpand"
-            TimerTitle="Test1"/>
-       
+           <controls:TimerView Grid.Row="0" Grid.ColumnSpan="2"
+                               HorizontalOptions="CenterAndExpand"/>
        <Entry Placeholder="Enter task"
               Text="{Binding TaskTodoName}"
               Grid.Row="1"/>
        <Button Text="Add"
-               Command="{Binding AddNewTaskTodoCommand}"
+               Command="{Binding AddCommand}"
                Grid.Row="1"
                Grid.Column="1"/>
        <CollectionView Grid.Row="2" Grid.ColumnSpan="2" 
@@ -32,74 +29,44 @@
                        <SwipeView.RightItems>
                            <SwipeItems>
                                <SwipeItem Text="Delete"
-                                          Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=DeleteTaskTodoCommand}"
-                                          CommandParameter="{Binding Id}"/>
+                                          Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=RemoveCommand}"
+                                          CommandParameter="{Binding .}"/>
                            </SwipeItems>
                        </SwipeView.RightItems>
                        <Grid Padding="0,5"
-                             ColumnDefinitions="*, 100,20,100">
-                           <Frame>
-                               <!-- <Frame.GestureRecognizers> -->
-                               <!--     <TapGestureRecognizer -->
-                               <!--         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=TapCommand}" -->
-                               <!--         CommandParameter="{Binding .}"/> -->
-                               <!-- </Frame.GestureRecognizers>  -->
+                             ColumnDefinitions="*, *"
+                             VerticalOptions="Center">
+                           <Frame BorderColor="Transparent">
+                               <Frame.GestureRecognizers>
+                                   <TapGestureRecognizer
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=TapedCommand}"
+                                       CommandParameter="{Binding .}"/>
+                               </Frame.GestureRecognizers>
                                <Label Text="{Binding Name}" FontSize="24"/>
                            </Frame> 
-                           
-                               <Button Text="+"
-                                   Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=AddPomodoroToTaskTodoCommand}"
-                                   CommandParameter="{Binding Id}"
-                                   Grid.Column="1"/>
-                               <Label Text="{Binding NbrPomodoro}" FontSize="24"
-                                      Grid.Column="2"/>
-                               <Button Text="-"
-                                       Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=SubPomodoroToTaskTodoCommand}"
-                                       CommandParameter="{Binding Id}"
-                                       Grid.Column="3"/>
+                           <Grid Column="1"
+                                 ColumnDefinitions="40,30,40" 
+                                 HorizontalOptions="End" 
+                                 VerticalOptions="Center">
+                           <ImageButton Source="plus.png"
+                               Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=AddPomodoroCommand}"
+                               CommandParameter="{Binding .}"
+                               Grid.Column="0"
+                               WidthRequest="10"
+                               HeightRequest="10"/>
+                           <Label Text="{Binding NbrPomodoro}" FontSize="24"
+                                  Grid.Column="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                           <ImageButton Source="minus.png"
+                                   Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=SubPomodoroCommand}"
+                                   CommandParameter="{Binding .}"
+                                   Grid.Column="2"
+                                   WidthRequest="10"
+                                   HeightRequest="10"/>
+                           </Grid>
                        </Grid>
                    </SwipeView>
                </DataTemplate> 
            </CollectionView.ItemTemplate>
        </CollectionView>
-       
-       <!-- <Entry Placeholder="Enter task" -->
-       <!--        Text="{Binding Text}" -->
-       <!--        Grid.Row="1"/> -->
-       <!-- <Button Text="Add" -->
-       <!--         Command="{Binding AddCommand}" -->
-       <!--         Grid.Row="1" -->
-       <!--         Grid.Column="1"/> -->
-       <!-- <CollectionView Grid.Row="2" Grid.ColumnSpan="2"  -->
-       <!--                 ItemsSource="{Binding Items}" -->
-       <!--                 SelectionMode="None"> -->
-       <!--     <CollectionView.ItemTemplate> -->
-       <!--          <DataTemplate x:DataType="{x:Type x:String}"> -->
-       <!--              <SwipeView> -->
-       <!--                  <SwipeView.RightItems> -->
-       <!--                      <SwipeItems> -->
-       <!--                          <SwipeItem Text="Delete" -->
-       <!--                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=DeleteCommand}" -->
-       <!--                                     CommandParameter="{Binding .}"/> -->
-       <!--                      </SwipeItems> -->
-       <!--                  </SwipeView.RightItems> -->
-       <!--                  <Grid Padding="0,5"> -->
-       <!--                      <Frame> -->
-       <!--                          <Frame.GestureRecognizers> -->
-       <!--                              <TapGestureRecognizer -->
-       <!--                                  Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=TapCommand}" -->
-       <!--                                  CommandParameter="{Binding .}"/> -->
-       <!--                          </Frame.GestureRecognizers>  -->
-       <!--                          <Label Text="{Binding .}" FontSize="24"/> -->
-       <!--                      </Frame>  -->
-       <!--                  </Grid> -->
-       <!--              </SwipeView> -->
-       <!--          </DataTemplate>  -->
-       <!--     </CollectionView.ItemTemplate> -->
-       <!-- </CollectionView> -->
-       
-       
-       
    </Grid>
-
 </ContentPage>

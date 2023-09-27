@@ -3,14 +3,60 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Mauidoro.DetailTaskPage"
              xmlns:viewmodel="clr-namespace:Mauidoro.ViewModel"
+             xmlns:controls="clr-namespace:Mauidoro.Controls"
              x:DataType="viewmodel:DetailTaskViewModel"
              Title="DetailPage">
-<StackLayout Padding="20">
-    <Label Text="{Binding Text}" 
-           FontSize="25" 
-           VerticalOptions="Center" 
-           HorizontalOptions="Center"/>
-    
-    <Button Text="Go Back" Command="{Binding GoBackCommand}"/>
-</StackLayout>
+    <StackLayout Padding="20">
+        <HorizontalStackLayout>
+            <Label Text="Edit : " VerticalTextAlignment="Center"/>
+            <Switch x:Name="EditModeSwitch" VerticalOptions="Center"/>
+        </HorizontalStackLayout>
+        <Grid ColumnDefinitions="200,*"
+              RowDefinitions="50,50,50,50">
+                <Label Text="Nom : " 
+                       VerticalTextAlignment="Center" 
+                       Grid.Column="0"
+                       Grid.Row="0"/>
+                <Entry IsEnabled="{Binding IsToggled, Source={x:Reference EditModeSwitch}}" 
+                       Text="{Binding TaskTodo.Name}" 
+                       VerticalTextAlignment="Center" 
+                       Grid.Column="1"
+                       Grid.Row="0"/>
+                
+                <Label Text="Nombre Pomodoro : " 
+                       VerticalTextAlignment="Center" 
+                       Grid.Column="0"
+                       Grid.Row="1"/>
+                <Entry IsEnabled="{Binding IsToggled, Source={x:Reference EditModeSwitch}}" 
+                       Text="{Binding TaskTodo.NbrPomodoro}" 
+                       VerticalTextAlignment="Center"
+                       Grid.Column="1"
+                       Grid.Row="1"/>
+                
+                <Label Text="Description : " 
+                       VerticalTextAlignment="Center" 
+                       Grid.Column="0"
+                       Grid.Row="2"/>
+                <Entry IsEnabled="{Binding IsToggled, Source={x:Reference EditModeSwitch}}" 
+                       Text="{Binding TaskTodo.Description}" 
+                       VerticalTextAlignment="Center"
+                       Grid.Column="1"
+                       Grid.Row="2"/>
+
+                <Label Text="PlannedDate : " 
+                       VerticalTextAlignment="Center" 
+                       Grid.Column="0"
+                       Grid.Row="3"/>
+                <Entry IsEnabled="{Binding IsToggled, Source={x:Reference EditModeSwitch}}" 
+                       Text="{Binding TaskTodo.PlannedDate}" 
+                       VerticalTextAlignment="Center"
+                       Grid.Column="1"
+                       Grid.Row="3"/>
+        </Grid>
+        <Button Text="Save" 
+                Command="{Binding SaveTaskCommand}"
+                CommandParameter="{Binding TaskTodo}"
+                IsVisible="{Binding IsToggled, Source={x:Reference EditModeSwitch}}"/>
+        <Button Text="Go Back" Command="{Binding GoBackCommand}"/>
+    </StackLayout>
 </ContentPage>

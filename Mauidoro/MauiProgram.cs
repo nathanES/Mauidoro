@@ -1,4 +1,5 @@
 ﻿using Mauidoro.Controls;
+using Mauidoro.Services;
 using Mauidoro.ViewModel;
 using Microsoft.Extensions.Logging;
 
@@ -17,7 +18,7 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 		builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
-		
+		builder.Services.AddSingleton<ITaskTodoService, TaskTodoService>();
 		builder.Services.AddSingleton<MainPage>();
 		builder.Services.AddSingleton<MainViewModel>(); // est créé qu'une fois 
 		
@@ -25,6 +26,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<DetailTaskViewModel>();
 		
 		builder.Services.AddSingleton<TimerView>();
+
 
 #if DEBUG
 		builder.Logging.AddDebug();

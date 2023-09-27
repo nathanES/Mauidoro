@@ -17,8 +17,8 @@ public partial class TimerView : ContentView, INotifyPropertyChanged
     }
     #endregion
 
-    private int _iPauseSessionDone { get; set; } = 0; //Si iPause est %4 == 0 alors on est dans une longue Pause
-    private int _iTravailSessionDone { get; set; } = 0; //Si iPause est %4 == 0 alors on est dans une longue Pause
+    private int _iPauseSessionDone { get; set; } = 0;
+    private int _iTravailSessionDone { get; set; } = 0; 
 
     private int _iSessionDone { get => _iPauseSessionDone + _iTravailSessionDone;}
     private System.Timers.Timer _timer;
@@ -93,7 +93,6 @@ public partial class TimerView : ContentView, INotifyPropertyChanged
         _timer.Stop();
         CanStartTimer = true;
     }
-    
     private void TimerFinished(object? sender, EventArgs e)
     {
         if (IsPauseMode)
